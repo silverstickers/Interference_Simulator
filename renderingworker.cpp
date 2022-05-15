@@ -15,7 +15,7 @@ static float RGB_b [] = {
 
 RenderingWorker::RenderingWorker(RenderingMaster *master, complex corner, complex step,
                                    int width, int height, int yPos,
-                                   double angle, int count, double spacing, volatile bool *stopped)
+                                   double angle, int count, double spacing, bool logScale, volatile bool *stopped)
     : m_master(master),
       m_corner(corner),
       m_step(step),
@@ -25,6 +25,7 @@ RenderingWorker::RenderingWorker(RenderingMaster *master, complex corner, comple
       m_count(count),
       m_angle(angle),
       m_spacing(spacing),
+      m_logScale(logScale),
       stopped(stopped)
 {
 }
@@ -36,7 +37,7 @@ void RenderingWorker::run()
     double realStep = std::real(m_step);
     double imagStep = std::imag(m_step);
 
-    double sensor_y = -0.75;
+    double sensor_y = 0.00;
 
     double x_pos;
     double y_pos = std::imag(m_corner) - m_yPos * imagStep;
@@ -44,15 +45,12 @@ void RenderingWorker::run()
     // omega / k = c
     double pi = 3.1416;
     double two_pi = 2*pi;
-    double omega = two_pi*40000;
-    double k = omega / 340.0;
     double lambda = 340.0 / 40000;
-    k = two_pi/lambda;
+    double k = two_pi/lambda;
 
     double phaseDiff = std::sin(m_angle*pi/180.)*k*m_spacing;
     //phaseDiff = m_angle;
-    std::cerr << "phaseDiff: " << phaseDiff << std::endl;
-    std::cerr << "m_angle: " << m_angle << " sin(a): " << std::sin(m_angle*pi/180.) << std::endl;
+    std::cerr << "phaseDiff: " << phaseDiff << " - meaning " << 1e3 * phaseDiff / 40.0 << " us" << std::endl;
 
     for (int y_loop = 0; y_loop < m_height; y_loop++)
     {
@@ -94,14 +92,23 @@ void RenderingWorker::run()
                 }
             }
 
-
-            qint16 value = static_cast<qint16>(128.0 + amplitude * 127.5/(m_count*m_count));
+            qint16 value;
+            if (m_logScale) {
+                value = static_cast<qint16>(- 40.343 * std::log(amplitude/(m_count*m_count)));
+            }
+            else {
+                value = 255 - static_cast<qint16>(amplitude * 254/(m_count*m_count));
+            }
             QColor color(0, 0, 0);
             if (value < 0 || value > 255) {
-                std::cerr << "value: " << value << std::endl;
-                std::cerr << "ampl: " << amplitude << std::endl;
+                if (!m_logScale) {
+                    std::cerr << "value: " << value << std::endl;
+                    std::cerr << "ampl: " << amplitude << std::endl;
+                }
+                value = value > 255 ? 255 : value;
+                value = value < 0 ? 0 : value;
             }
-            if (!nearSensor) color = QColor::fromRgb(255*RGB_r[255-value], 255*RGB_g[255-value], 255*RGB_b[255-value]);
+            if (!nearSensor) color = QColor::fromRgb(255*RGB_r[value], 255*RGB_g[value], 255*RGB_b[value]);
 
             image.setPixelColor(x_loop, y_loop, color);
         }

@@ -13,7 +13,7 @@ RenderingMaster::~RenderingMaster()
 
 void RenderingMaster::startRender(QImage *image, double xcenter, double ycenter,
                                            double xrange, double yrange, int width, int height,
-                                           double angle, int count, double spacing)
+                                           double angle, int count, double spacing, bool logScale)
 {
     stopWorkers = true;
     QThreadPool::globalInstance()->waitForDone();
@@ -40,14 +40,14 @@ void RenderingMaster::startRender(QImage *image, double xcenter, double ycenter,
     for (int i = 0; i < nTasks; i++) {
         RenderingWorker *worker = new RenderingWorker(this, complex(real, imaginary),
                                                         complex(realStep, imagStep), width,
-                                                        TASKSIZE, TASKSIZE*i, angle, count, spacing, &stopWorkers);
+                                                        TASKSIZE, TASKSIZE*i, angle, count, spacing, logScale, &stopWorkers);
         //worker->setAutoDelete(false);
         QThreadPool::globalInstance()->start(worker);
     }
     if (height % TASKSIZE != 0) {
         RenderingWorker *worker = new RenderingWorker(this, complex(real, imaginary), complex(realStep, imagStep),
                                                         width, height % TASKSIZE, height - height % TASKSIZE,
-                                                        angle, count, spacing, &stopWorkers);
+                                                        angle, count, spacing, logScale, &stopWorkers);
         //worker->setAutoDelete(false);
         QThreadPool::globalInstance()->start(worker);
     }

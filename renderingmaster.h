@@ -27,7 +27,7 @@ signals:
 public slots:
     void startRender(QImage *image, double xcenter, double ycenter,
                              double xrange, double yrange, int width, int height,
-                             double angle, int count, double spacing);
+                             double angle, int count, double spacing, bool logScale);
     void handleWorkerResult(QImage partialImage, int yPos);
 
 private:

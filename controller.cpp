@@ -27,7 +27,7 @@ void Controller::startCalculation()
     double xrange = static_cast<double>(m_xrange)/static_cast<double>(m_zoom);
     double yrange = static_cast<double>(m_yrange)/static_cast<double>(m_zoom);
 
-    emit calculateRender(&m_image, m_xcenter, m_ycenter, xrange, yrange, m_width, m_height, m_angle, m_count, m_spacing);
+    emit calculateRender(&m_image, m_xcenter, m_ycenter, xrange, yrange, m_width, m_height, m_angle, m_count, m_spacing, m_logScale);
 }
 
 void Controller::zoomIn()
@@ -105,6 +105,12 @@ void Controller::numberSlider(int number)
 void Controller::spacingSlider(double spacing)
 {
     m_spacing = static_cast<double>(spacing*0.001);
+    startCalculation();
+}
+
+void Controller::logScale(bool logScale)
+{
+    m_logScale = static_cast<bool>(logScale);
     startCalculation();
 }
 

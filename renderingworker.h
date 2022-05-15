@@ -18,7 +18,7 @@ class RenderingWorker : public QRunnable
 public:
     RenderingWorker(RenderingMaster *master, complex corner, complex step,
                      int width, int height, int yPos,
-                     double angle, int count, double spacing, volatile bool *stopped);
+                     double angle, int count, double spacing, bool logScale, volatile bool *stopped);
 
 private:
     void run() override;
@@ -29,6 +29,7 @@ private:
 
     double m_angle;
     double m_spacing;
+    bool m_logScale;
 
     std::vector<std::complex<double>> m_sensor_positions;
 

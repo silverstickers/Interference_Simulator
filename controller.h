@@ -34,6 +34,7 @@ public:
     Q_INVOKABLE void angleSlider(double angle);
     Q_INVOKABLE void numberSlider(int number);
     Q_INVOKABLE void spacingSlider(double spacing);
+    Q_INVOKABLE void logScale(bool logScale);
 
 public slots:
     void handleNewImage(const QImage &image);
@@ -42,22 +43,23 @@ signals:
     void imageRendered();
     void calculateRender(QImage *image, double xcenter, double ycenter,
                              double xrange, double yrange, int width, int height,
-                             double angle, int count, double spacing);
+                             double angle, int count, double spacing, bool logScale);
 
 private:
     QMutex mutex;
     RenderingMaster master;
     QThread masterThread;
     QImage m_image;
-    quint16 m_height = 250, m_width = 375;
+    quint16 m_height = 300, m_width = 400;
     double m_xcenter = static_cast<double>(0);
-    double m_ycenter = static_cast<double>(0);
-    double m_xrange = 3, m_yrange = 2;
+    double m_ycenter = static_cast<double>(1.2);
+    double m_xrange = 4, m_yrange = 3;
     double m_zoom = 1;
 
     double m_angle = 0;
     int m_count = 5;
     double m_spacing = 0.005;
+    bool m_logScale = false;
 
     const int ZOOMFACTOR = 2;
     const int TRANSLATIONFRACTION = 7;
