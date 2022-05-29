@@ -50,7 +50,7 @@ void RenderingWorker::run()
 
     double phaseDiff = std::sin(m_angle*pi/180.)*k*m_spacing;
     //phaseDiff = m_angle;
-    std::cerr << "phaseDiff: " << phaseDiff << " - meaning " << 1e3 * phaseDiff / 40.0 << " us" << std::endl;
+    std::cerr << "phaseDiff: " << phaseDiff << " - meaning " << 1e3 * phaseDiff / 40.0 / 6.282 << " us" << std::endl;
 
     for (int y_loop = 0; y_loop < m_height; y_loop++)
     {
